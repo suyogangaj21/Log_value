@@ -60,11 +60,12 @@ const fetchCardMap = unstable_cache(
     const { data } = await supabase
       .from("cards")
       .select("id, name, icon_url, elixir_cost");
-    const m = new Map<
+    // Return a plain record — Maps don't survive JSON serialisation in the cache
+    const m: Record<
       number,
       { name: string; icon_url?: string; elixir_cost?: number }
-    >();
-    for (const c of data ?? []) m.set(c.id, c);
+    > = {};
+    for (const c of data ?? []) m[c.id] = c;
     return m;
   },
   ["card-map"],
@@ -99,7 +100,7 @@ export default async function DeckDetailPage({ params }: Props) {
 
   const cards = (deck.card_ids as number[]).map((id: number) => ({
     id,
-    ...(cardMap.get(id) ?? { name: `Card ${id}` }),
+    ...(cardMap[id] ?? { name: `Card ${id}` }),
   }));
 
   const similarDecks = stats
@@ -168,7 +169,7 @@ export default async function DeckDetailPage({ params }: Props) {
             {similarDecks.map((sd) => {
               const simCards = (sd.card_ids as number[]).map((id: number) => ({
                 id,
-                ...(cardMap.get(id) ?? { name: `Card ${id}` }),
+                ...(cardMap[id] ?? { name: `Card ${id}` }),
               }));
               return (
                 <Link

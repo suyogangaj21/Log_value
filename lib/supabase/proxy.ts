@@ -51,7 +51,14 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname !== "/" &&
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
+    !request.nextUrl.pathname.startsWith("/auth") &&
+    !request.nextUrl.pathname.startsWith("/api/") &&
+    !request.nextUrl.pathname.startsWith("/cards") &&
+    !request.nextUrl.pathname.startsWith("/decks") &&
+    !request.nextUrl.pathname.startsWith("/leaderboard") &&
+    !request.nextUrl.pathname.startsWith("/search") &&
+    !request.nextUrl.pathname.startsWith("/players") &&
+    !request.nextUrl.pathname.startsWith("/clans")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();

@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAllCards } from "@/lib/cr-api/client";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 function isCronAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const { items: cards } = await getAllCards();
-    const supabase = await createClient();
+    const supabase = createServiceClient();
 
     const rows = cards.map((c) => ({
       id: c.id,

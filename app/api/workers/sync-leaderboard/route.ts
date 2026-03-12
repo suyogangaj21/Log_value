@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getPlayerLeaderboard } from "@/lib/cr-api/client";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 function isCronAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const leaderboard = await getPlayerLeaderboard(57000006, 1000);
-    const supabase = await createClient();
+    const supabase = createServiceClient();
     const now = new Date().toISOString();
 
     // Upsert player stubs (lightweight — full sync happens in sync-battles)

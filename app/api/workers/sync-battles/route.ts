@@ -13,7 +13,7 @@ import {
 } from "@/lib/cr-api/client";
 import { computeDeckHash } from "@/lib/cr-api/deck-hash";
 import { classifyArchetype } from "@/lib/analytics/archetypes";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 function isCronAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   );
 
   try {
-    const supabase = await createClient();
+    const supabase = createServiceClient();
 
     // Pull a batch of players from the latest leaderboard snapshot
     const { data: playerBatch, error: fetchErr } = await supabase
