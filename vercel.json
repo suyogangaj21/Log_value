@@ -1,0 +1,24 @@
+{
+  "crons": [
+    {
+      "path": "/api/workers/sync-cards",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/workers/sync-leaderboard",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/workers/sync-battles?offset=0&limit=50",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/workers/sync-battles?offset=50&limit=50",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/workers/sync-battles?offset=100&limit=50",
+      "schedule": "* * * * *"
+    }
+  ]
+}
