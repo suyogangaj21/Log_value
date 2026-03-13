@@ -29,53 +29,73 @@ const fetchCards = unstable_cache(
   { revalidate: 300 },
 );
 
-const RARITY_COLOR: Record<string, string> = {
-  common: "bg-zinc-700 text-zinc-300",
-  rare: "bg-blue-900/60 text-blue-300",
-  epic: "bg-purple-900/60 text-purple-300",
-  legendary: "bg-yellow-900/60 text-yellow-300",
-  champion: "bg-red-900/60 text-red-300",
+const RARITY_BADGE: Record<string, string> = {
+  common: "border-zinc-600/50 bg-zinc-800/60 text-zinc-400",
+  rare: "border-blue-700/50 bg-blue-950/60 text-blue-400",
+  epic: "border-violet-700/50 bg-violet-950/60 text-violet-400",
+  legendary: "border-yellow-600/50 bg-yellow-950/50 text-yellow-400",
+  champion: "border-red-700/50 bg-red-950/60 text-red-400",
 };
+
+const RANK_MEDALS = ["\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"];
 
 export default async function CardsPage() {
   const cards = await fetchCards();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-10 sm:px-6">
-      <div>
-        <h1 className="text-3xl font-black text-white">Card Tier List</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Ranked by Rating — R = WR × (1 − e<sup>−UR/baseline</sup>). Last 7
-          days ladder.
-        </p>
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6">
+      {/* Page header */}
+      <div className="flex items-start gap-4">
+        <div className="mt-0.5 h-8 w-1 shrink-0 rounded-full bg-primary" />
+        <div>
+          <h1 className="font-display text-3xl font-black tracking-tight text-foreground">
+            Card Tier List
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Ranked by Rating — R = WR × (1 − e<sup>−UR/baseline</sup>). Last 7
+            days ladder.
+          </p>
+        </div>
       </div>
 
       {cards.length === 0 ? (
-        <p className="py-16 text-center text-sm text-zinc-600">
+        <div className="rounded-xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
           No card data yet — run the sync-cards and sync-battles workers to
           populate.
-        </p>
+        </div>
       ) : (
-        <div className="divide-y divide-zinc-800/50 rounded-xl border border-zinc-700/50 overflow-hidden">
-          <div className="grid grid-cols-[2.5rem_1fr_5rem_6rem_6rem_4rem] gap-x-4 bg-zinc-800/50 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
+          {/* Table header */}
+          <div className="grid grid-cols-[2rem_1fr_4.5rem] sm:grid-cols-[2.5rem_1fr_4.5rem_8rem_4.5rem] md:grid-cols-[2.5rem_1fr_5rem_9rem_6rem_5rem] gap-x-3 border-b border-border bg-muted/50 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             <span>#</span>
             <span>Card</span>
-            <span>Elixir</span>
-            <span>WR / CWR</span>
-            <span className="hidden sm:block">Battles</span>
+            <span className="hidden sm:block">Elixir</span>
+            <span className="hidden sm:block">WR / CWR</span>
+            <span className="hidden md:block">Battles</span>
             <span>Rating</span>
           </div>
           {cards.map((card, i) => (
             <Link
               key={card.card_id}
               href={`/cards/${card.card_id}`}
-              className="grid grid-cols-[2.5rem_1fr_5rem_6rem_6rem_4rem] items-center gap-x-4 bg-zinc-950/50 px-4 py-3 transition-colors hover:bg-zinc-800/50"
+              className="group grid grid-cols-[2rem_1fr_4.5rem] sm:grid-cols-[2.5rem_1fr_4.5rem_8rem_4.5rem] md:grid-cols-[2.5rem_1fr_5rem_9rem_6rem_5rem] items-center gap-x-3 border-b border-border/50 px-4 py-3 last:border-0 transition-colors hover:bg-accent/40"
             >
-              <span className="text-xs font-bold text-zinc-500 tabular-nums">
-                {i + 1}
+              {/* Rank */}
+              <span className="text-center text-sm">
+                {i < 3 ? (
+                  <span role="img" aria-label={`rank ${i + 1}`}>
+                    {RANK_MEDALS[i]}
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold tabular-nums text-muted-foreground">
+                    {i + 1}
+                  </span>
+                )}
               </span>
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="h-10 w-9 shrink-0 overflow-hidden rounded border border-zinc-700/40 bg-zinc-800">
+
+              {/* Card info */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="h-10 w-9 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-secondary">
                   {card.icon_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -84,32 +104,44 @@ export default async function CardsPage() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[8px] font-bold text-zinc-500">
+                    <div className="flex h-full w-full items-center justify-center text-[8px] font-bold text-muted-foreground">
                       {card.name.slice(0, 4)}
                     </div>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-zinc-200">
+                  <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                     {card.name}
                   </p>
                   {card.rarity && (
                     <span
-                      className={`inline-block rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase ${RARITY_COLOR[card.rarity] ?? RARITY_COLOR.common}`}
+                      className={`inline-block rounded-md border px-1.5 py-px text-[9px] font-semibold uppercase ${
+                        RARITY_BADGE[card.rarity] ?? RARITY_BADGE.common
+                      }`}
                     >
                       {card.rarity}
                     </span>
                   )}
                 </div>
               </div>
-              <div>
+
+              {/* Elixir */}
+              <div className="hidden sm:block">
                 <ElixirBadge cost={card.elixir_cost} size="md" />
               </div>
-              <WinRateBar winRate={card.win_rate} cwr={card.cwr} />
-              <span className="hidden text-xs text-zinc-500 tabular-nums sm:block">
+
+              {/* WR Bar */}
+              <div className="hidden sm:block">
+                <WinRateBar winRate={card.win_rate} cwr={card.cwr} />
+              </div>
+
+              {/* Battles */}
+              <span className="hidden text-xs tabular-nums text-muted-foreground md:block">
                 {(card.use_count ?? 0).toLocaleString()}
               </span>
-              <span className="text-sm font-black text-purple-400 tabular-nums">
+
+              {/* Rating */}
+              <span className="text-sm font-black tabular-nums text-primary">
                 {((card.rating ?? 0) * 100).toFixed(1)}
               </span>
             </Link>

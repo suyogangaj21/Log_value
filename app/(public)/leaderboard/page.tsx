@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { createPublicClient } from "@/lib/supabase/public";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Crown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardRealtime } from "@/components/leaderboard-realtime";
@@ -35,15 +34,23 @@ export default async function LeaderboardPage() {
   const initialRows = await fetchLeaderboard();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-10 sm:px-6">
-      <div className="flex items-baseline justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-white">Global Leaderboard</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Top 200 players · Updates every 2 min
-          </p>
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6">
+      {/* Page header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-start gap-4">
+          <div className="mt-1 h-8 w-1 shrink-0 rounded-full bg-yellow-400" />
+          <div>
+            <h1 className="font-display text-3xl font-black tracking-tight text-foreground">
+              Global Leaderboard
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Top 200 players · updates every 2 min
+            </p>
+          </div>
         </div>
-        <Crown className="text-yellow-400" size={28} />
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-yellow-500/20 bg-yellow-500/10">
+          <Crown className="text-yellow-400" size={24} />
+        </div>
       </div>
 
       <Suspense fallback={<LeaderboardSkeleton />}>
@@ -55,9 +62,9 @@ export default async function LeaderboardPage() {
 
 function LeaderboardSkeleton() {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {Array.from({ length: 20 }).map((_, i) => (
-        <Skeleton key={i} className="h-12 w-full rounded-lg bg-zinc-800" />
+        <Skeleton key={i} className="h-14 w-full rounded-xl bg-muted" />
       ))}
     </div>
   );

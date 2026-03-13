@@ -38,24 +38,14 @@ export function DeckCard({
   const archColor = ARCHETYPE_COLORS[arch] ?? ARCHETYPE_COLORS.unknown;
 
   return (
-    <div
-      className={cn(
-        "rounded-xl border border-zinc-700/50 bg-zinc-900/60 p-3",
-        className,
-      )}
-    >
-      <div
-        className={cn(
-          "grid gap-1.5",
-          compact ? "grid-cols-8" : "grid-cols-4 sm:grid-cols-8",
-        )}
-      >
+    <div className={cn("rounded-xl border bg-card p-3", className)}>
+      <div className={cn("grid gap-1.5", "grid-cols-4 sm:grid-cols-8")}>
         {cards.slice(0, 8).map((card) => (
           <div
             key={card.id}
             className="group relative flex flex-col items-center gap-0.5"
           >
-            <div className="relative overflow-hidden rounded-lg border border-zinc-700/40 bg-zinc-800">
+            <div className="relative overflow-hidden rounded-lg border border-border/50 bg-secondary transition-all group-hover:border-primary/40 group-hover:shadow-[0_0_10px_hsl(var(--primary)/0.2)]">
               {card.icon_url ? (
                 <Image
                   src={card.icon_url}
@@ -68,7 +58,7 @@ export function DeckCard({
               ) : (
                 <div
                   className={cn(
-                    "flex items-center justify-center bg-zinc-700 text-zinc-400 text-[8px] font-bold text-center p-1",
+                    "flex items-center justify-center bg-muted text-muted-foreground text-[8px] font-bold text-center p-1",
                     compact ? "h-12 w-10" : "h-16 w-14",
                   )}
                 >
@@ -80,7 +70,7 @@ export function DeckCard({
               </div>
             </div>
             {!compact && (
-              <span className="w-full truncate text-center text-[9px] text-zinc-500 group-hover:text-zinc-300">
+              <span className="w-full truncate text-center text-[9px] text-muted-foreground group-hover:text-foreground">
                 {card.name}
               </span>
             )}
@@ -91,7 +81,7 @@ export function DeckCard({
       {(avgElixir !== null && avgElixir !== undefined) || archetype ? (
         <div className="mt-2.5 flex items-center gap-2">
           {avgElixir !== null && avgElixir !== undefined && (
-            <div className="flex items-center gap-1 text-xs text-zinc-500">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span>Avg</span>
               <AvgElixirBadge avgElixir={avgElixir} />
             </div>

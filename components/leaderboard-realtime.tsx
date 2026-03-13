@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Crown } from "lucide-react";
+import { Crown, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -22,13 +22,17 @@ interface Props {
   initialRows: LeaderboardRow[];
 }
 
+const PODIUM = [
+  { ring: "ring-yellow-500/30 bg-yellow-500/10 text-yellow-400", label: "1st" },
+  { ring: "ring-zinc-400/30 bg-zinc-400/10 text-zinc-300", label: "2nd" },
+  { ring: "ring-amber-700/30 bg-amber-700/10 text-amber-600", label: "3rd" },
+];
+
 export function LeaderboardRealtime({ initialRows }: Props) {
   const [rows, setRows] = useState<LeaderboardRow[]>(initialRows);
 
   useEffect(() => {
     const supabase = createClient();
-
-    // Re-fetch on any leaderboard_snapshots INSERT (worker just pushed new data)
     const channel = supabase
       .channel("leaderboard-updates")
       .on(
@@ -46,57 +50,77 @@ export function LeaderboardRealtime({ initialRows }: Props) {
         },
       )
       .subscribe();
-
     return () => {
       supabase.removeChannel(channel);
     };
   }, []);
 
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
+        No leaderboard data yet — run the sync-leaderboard worker.
+      </div>
+    );
+  }
+
   return (
-    <div className="divide-y divide-zinc-800/60 rounded-xl border border-zinc-700/50 overflow-hidden">
-      {rows.map((player, i) => (
-        <Link
-          key={player.player_tag}
-          href={`/players/${encodeURIComponent(player.player_tag)}`}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 transition-colors hover:bg-zinc-800/60",
-            i < 3 ? "bg-zinc-900" : "bg-zinc-950/50",
-          )}
-        >
-          <div className="w-8 text-center">
-            {i === 0 ? (
-              <Crown className="mx-auto text-yellow-400" size={16} />
-            ) : i === 1 ? (
-              <Crown className="mx-auto text-zinc-300" size={14} />
-            ) : i === 2 ? (
-              <Crown className="mx-auto text-amber-600" size={13} />
-            ) : (
-              <span className="text-xs font-bold text-zinc-600">
-                {player.current_rank}
-              </span>
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      {/* Column header */}
+      <div className="grid grid-cols-[3rem_1fr_auto] gap-x-4 border-b border-border bg-muted/50 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <span>Rank</span>
+        <span>Player</span>
+        <span>Trophies</span>
+      </div>
+
+      {rows.map((player, i) => {
+        const podium = i < 3 ? PODIUM[i] : null;
+        return (
+          <Link
+            key={player.player_tag}
+            href={`/players/${encodeURIComponent(player.player_tag)}`}
+            className={cn(
+              "group grid grid-cols-[3rem_1fr_auto] items-center gap-x-4 border-b border-border/50 px-4 py-3.5 last:border-0 transition-colors hover:bg-accent/40",
+              i < 3 && "bg-card",
             )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="truncate font-semibold text-zinc-200">
-              {player.player_name}
-            </p>
-            {player.clan_name && (
-              <p className="truncate text-xs text-zinc-500">
-                {player.clan_name}
+          >
+            {/* Rank badge */}
+            <div className="flex justify-center">
+              {podium ? (
+                <div
+                  className={cn(
+                    "flex h-7 w-7 items-center justify-center rounded-full ring-1",
+                    podium.ring,
+                  )}
+                >
+                  <Crown size={13} />
+                </div>
+              ) : (
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-bold tabular-nums text-muted-foreground">
+                  {player.current_rank}
+                </span>
+              )}
+            </div>
+
+            {/* Player name + clan */}
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
+                {player.player_name}
               </p>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 text-sm font-bold text-yellow-400 tabular-nums">
-            <Crown size={12} />
-            {player.trophies.toLocaleString()}
-          </div>
-        </Link>
-      ))}
-      {rows.length === 0 && (
-        <p className="py-10 text-center text-sm text-zinc-600">
-          No leaderboard data yet — run the sync-leaderboard worker.
-        </p>
-      )}
+              {player.clan_name && (
+                <p className="truncate text-xs text-muted-foreground">
+                  {player.clan_name}
+                </p>
+              )}
+            </div>
+
+            {/* Trophies */}
+            <div className="flex items-center gap-1.5 text-sm font-bold text-yellow-400 tabular-nums">
+              <Trophy size={13} />
+              {player.trophies.toLocaleString()}
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

@@ -13,12 +13,12 @@ interface StatCardProps {
   className?: string;
 }
 
-const highlightClasses = {
-  green: "border-green-700/50 bg-green-950/30",
-  red: "border-red-700/50 bg-red-950/30",
-  yellow: "border-yellow-700/50 bg-yellow-950/30",
-  blue: "border-blue-700/50 bg-blue-950/30",
-  default: "border-zinc-700/50 bg-zinc-900/40",
+const topBarGradient = {
+  green: "from-emerald-500 to-green-400",
+  red: "from-red-500 to-rose-400",
+  yellow: "from-yellow-400 to-amber-300",
+  blue: "from-blue-500 to-cyan-400",
+  default: "from-primary/60 to-violet-400/60",
 };
 
 export function StatCard({
@@ -32,21 +32,27 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "rounded-xl border px-5 py-4 backdrop-blur-sm transition-all",
-        highlightClasses[highlight],
+        "relative overflow-hidden rounded-xl border bg-card px-5 py-4 transition-all hover:border-primary/30",
         className,
       )}
     >
+      {/* Gradient top accent bar */}
+      <div
+        className={cn(
+          "absolute inset-x-0 top-0 h-px bg-gradient-to-r",
+          topBarGradient[highlight],
+        )}
+      />
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           {label}
         </p>
-        {icon && <span className="text-zinc-500">{icon}</span>}
+        {icon && <span className="text-muted-foreground">{icon}</span>}
       </div>
-      <p className="mt-2 text-3xl font-black tabular-nums text-zinc-50">
+      <p className="mt-2.5 text-3xl font-black tabular-nums text-foreground">
         {value}
       </p>
-      {sub && <p className="mt-1 text-xs text-zinc-500">{sub}</p>}
+      {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
     </div>
   );
 }

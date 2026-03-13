@@ -100,21 +100,27 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="mb-6 flex items-baseline justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-white">Meta Decks</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            {filteredDecks.length.toLocaleString()} decks matched
-          </p>
+      {/* Page header */}
+      <div className="mb-8 flex items-start justify-between">
+        <div className="flex items-start gap-4">
+          <div className="mt-1 h-8 w-1 shrink-0 rounded-full bg-primary" />
+          <div>
+            <h1 className="font-display text-3xl font-black tracking-tight text-foreground">
+              Meta Decks
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {filteredDecks.length.toLocaleString()} decks matched
+            </p>
+          </div>
         </div>
-        <SlidersHorizontal className="text-zinc-500" size={20} />
+        <SlidersHorizontal className="mt-1 text-muted-foreground" size={20} />
       </div>
 
       {/* Filters row */}
-      <div className="mb-6 grid gap-4 rounded-xl border border-zinc-700/50 bg-zinc-900/60 p-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Elixir range */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Avg Elixir {elixirRange[0].toFixed(1)}–{elixirRange[1].toFixed(1)}
           </label>
           <Slider
@@ -123,20 +129,20 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
             step={0.1}
             value={elixirRange}
             onValueChange={(v) => setElixirRange(v as [number, number])}
-            className="[&_[role=slider]]:border-purple-500 [&_[role=slider]]:bg-purple-600"
+            className="[&_[role=slider]]:border-primary [&_[role=slider]]:bg-primary"
           />
         </div>
 
         {/* Archetype */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Archetype
           </label>
           <Select value={archetype} onValueChange={setArchetype}>
-            <SelectTrigger className="border-zinc-700 bg-zinc-800 text-zinc-200">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-zinc-700 bg-zinc-900 text-zinc-200">
+            <SelectContent>
               <SelectItem value="all">All Archetypes</SelectItem>
               {Object.entries(ARCHETYPE_LABELS).map(([key, label]) => (
                 <SelectItem key={key} value={key}>
@@ -149,17 +155,17 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
 
         {/* Sort */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Sort By
           </label>
           <Select
             value={sortBy}
             onValueChange={(v) => setSortBy(v as typeof sortBy)}
           >
-            <SelectTrigger className="border-zinc-700 bg-zinc-800 text-zinc-200">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-zinc-700 bg-zinc-900 text-zinc-200">
+            <SelectContent>
               <SelectItem value="rating">Rating</SelectItem>
               <SelectItem value="win_rate">Win Rate</SelectItem>
               <SelectItem value="cwr">Clean WR</SelectItem>
@@ -170,36 +176,43 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
 
         {/* Card filter */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Card Filter
           </label>
           <Input
             placeholder="Search card…"
             value={cardSearch}
             onChange={(e) => setCardSearch(e.target.value)}
-            className="border-zinc-700 bg-zinc-800 text-zinc-200 placeholder:text-zinc-600"
           />
           {cardSearch && (
-            <div className="max-h-40 overflow-y-auto rounded border border-zinc-700 bg-zinc-900 text-xs">
+            <div className="max-h-40 overflow-y-auto rounded-lg border border-border bg-popover text-xs shadow-md">
               {filteredCards.map((card) => {
                 const isIncluded = includeCard.includes(card.id);
                 const isExcluded = excludeCard.includes(card.id);
                 return (
                   <div
                     key={card.id}
-                    className="flex items-center justify-between gap-2 px-3 py-1.5 hover:bg-zinc-800"
+                    className="flex items-center justify-between gap-2 px-3 py-1.5 hover:bg-accent/50"
                   >
-                    <span className="text-zinc-300">{card.name}</span>
+                    <span className="text-foreground">{card.name}</span>
                     <div className="flex gap-1">
                       <button
                         onClick={() => toggleInclude(card.id)}
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${isIncluded ? "bg-green-700 text-white" : "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"}`}
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold transition-colors ${
+                          isIncluded
+                            ? "bg-emerald-700/60 text-emerald-300"
+                            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                        }`}
                       >
                         +
                       </button>
                       <button
                         onClick={() => toggleExclude(card.id)}
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${isExcluded ? "bg-red-700 text-white" : "bg-zinc-700 text-zinc-400 hover:bg-zinc-600"}`}
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold transition-colors ${
+                          isExcluded
+                            ? "bg-red-800/60 text-red-300"
+                            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                        }`}
                       >
                         −
                       </button>
@@ -215,7 +228,7 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
               {includeCard.map((id) => (
                 <Badge
                   key={id}
-                  className="gap-1 bg-green-900/50 text-green-300 border-green-700/50"
+                  className="gap-1 border-emerald-700/40 bg-emerald-900/30 text-emerald-400"
                 >
                   +{cardMap.get(id)?.name ?? id}
                   <button onClick={() => toggleInclude(id)}>
@@ -226,7 +239,7 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
               {excludeCard.map((id) => (
                 <Badge
                   key={id}
-                  className="gap-1 bg-red-900/50 text-red-300 border-red-700/50"
+                  className="gap-1 border-red-800/40 bg-red-900/30 text-red-400"
                 >
                   −{cardMap.get(id)?.name ?? id}
                   <button onClick={() => toggleExclude(id)}>
@@ -241,7 +254,7 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
 
       {/* Results grid */}
       {filteredDecks.length === 0 ? (
-        <div className="py-16 text-center text-sm text-zinc-600">
+        <div className="rounded-xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
           No decks match your filters. Try relaxing the constraints.
         </div>
       ) : (
@@ -260,7 +273,7 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
               <Link
                 key={deck.deck_hash}
                 href={`/decks/${deck.deck_hash}`}
-                className="group block rounded-xl border border-zinc-700/50 bg-zinc-900/60 p-4 transition-all hover:border-purple-700/40 hover:bg-zinc-900"
+                className="group block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-[0_0_14px_hsl(var(--primary)/0.15)]"
               >
                 <DeckCard
                   cards={cards}
@@ -270,10 +283,10 @@ export function DeckSearchPage({ initialDecks, allCards }: Props) {
                 />
                 <div className="mt-3 space-y-1.5">
                   <WinRateBar winRate={deck.win_rate} cwr={deck.cwr} />
-                  <div className="flex items-center justify-between text-xs text-zinc-500">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>
                       Rating{" "}
-                      <span className="font-bold text-purple-400">
+                      <span className="font-bold text-primary">
                         {((deck.rating ?? 0) * 100).toFixed(1)}
                       </span>
                     </span>

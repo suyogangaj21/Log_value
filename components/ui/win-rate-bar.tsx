@@ -15,12 +15,12 @@ function pct(v: number | null): string {
   return `${(v * 100).toFixed(1)}%`;
 }
 
-function barColor(v: number): string {
-  if (v >= 0.6) return "bg-green-500";
-  if (v >= 0.52) return "bg-emerald-500";
-  if (v >= 0.48) return "bg-yellow-500";
-  if (v >= 0.4) return "bg-orange-500";
-  return "bg-red-500";
+function barGradient(v: number): string {
+  if (v >= 0.6) return "from-emerald-500 to-green-400";
+  if (v >= 0.52) return "from-emerald-400 to-teal-500";
+  if (v >= 0.48) return "from-yellow-400 to-amber-500";
+  if (v >= 0.4) return "from-orange-400 to-red-400";
+  return "from-red-500 to-rose-600";
 }
 
 export function WinRateBar({
@@ -33,31 +33,34 @@ export function WinRateBar({
   const cwrV = cwr ?? null;
 
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
       {showLabels && (
-        <div className="flex items-center justify-between text-xs text-zinc-400">
-          <span>
-            WR <span className="font-bold text-zinc-200">{pct(winRate)}</span>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">
+            WR <span className="font-bold text-foreground">{pct(winRate)}</span>
           </span>
           {cwrV !== null && (
-            <span>
-              CWR <span className="font-bold text-zinc-200">{pct(cwrV)}</span>
+            <span className="text-muted-foreground">
+              CWR <span className="font-bold text-foreground">{pct(cwrV)}</span>
             </span>
           )}
         </div>
       )}
-      <div className="flex h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
         <div
-          className={cn("h-full rounded-full transition-all", barColor(wr))}
+          className={cn(
+            "h-full rounded-full bg-gradient-to-r transition-all",
+            barGradient(wr),
+          )}
           style={{ width: `${Math.min(100, wr * 100)}%` }}
         />
       </div>
       {cwrV !== null && (
-        <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary/60">
           <div
             className={cn(
-              "h-full rounded-full opacity-75 transition-all",
-              barColor(cwrV),
+              "h-full rounded-full bg-gradient-to-r opacity-75 transition-all",
+              barGradient(cwrV),
             )}
             style={{ width: `${Math.min(100, cwrV * 100)}%` }}
           />

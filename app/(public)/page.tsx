@@ -67,11 +67,11 @@ const fetchCardMap = unstable_cache(
     const { data } = await supabase
       .from("cards")
       .select("id, name, icon_url, elixir_cost");
-    const map = new Map<
+    const map: Record<
       number,
       { name: string; icon_url?: string; elixir_cost?: number }
-    >();
-    for (const c of data ?? []) map.set(c.id, c);
+    > = {};
+    for (const c of data ?? []) map[c.id] = c;
     return map;
   },
   ["card-map-home"],
@@ -95,7 +95,7 @@ export default async function HomePage() {
         topDeckCards={
           metaDecks[0]
             ? (metaDecks[0].card_ids as number[]).map((id) => {
-                const info = cardMap.get(id);
+                const info = cardMap[id];
                 return {
                   id,
                   name: info?.name ?? `Card ${id}`,
@@ -111,14 +111,19 @@ export default async function HomePage() {
       />
 
       {/* ── Below-fold analytics data ─────────────────────────── */}
-      <div className="mx-auto max-w-7xl space-y-12 px-4 pb-16 sm:px-6">
+      <div className="mx-auto max-w-7xl space-y-14 px-4 pb-20 sm:px-6">
         {/* Top Meta Decks */}
         <section>
-          <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="text-xl font-bold text-white">Top Meta Decks</h2>
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-6 w-0.5 rounded-full bg-primary" />
+              <h2 className="font-display text-xl font-bold text-foreground">
+                Top Meta Decks
+              </h2>
+            </div>
             <Link
               href="/decks"
-              className="text-sm text-purple-400 hover:text-purple-300"
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
               View all →
             </Link>
@@ -130,13 +135,13 @@ export default async function HomePage() {
               {metaDecks.slice(0, 6).map((deck) => {
                 const cards = (deck.card_ids as number[]).map((id) => ({
                   id,
-                  ...(cardMap.get(id) ?? { name: `Card ${id}` }),
+                  ...(cardMap[id] ?? { name: `Card ${id}` }),
                 }));
                 return (
                   <Link
                     key={deck.deck_hash}
                     href={`/decks/${deck.deck_hash}`}
-                    className="group block rounded-xl border border-zinc-700/50 bg-zinc-900/60 p-4 transition-all hover:border-purple-700/60 hover:bg-zinc-900"
+                    className="group block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-[0_0_14px_hsl(var(--primary)/0.15)]"
                   >
                     <DeckCard
                       cards={cards}
@@ -144,12 +149,12 @@ export default async function HomePage() {
                       archetype={deck.archetype}
                       compact
                     />
-                    <div className="mt-3 space-y-1">
+                    <div className="mt-3 space-y-1.5">
                       <WinRateBar winRate={deck.win_rate} cwr={deck.cwr} />
-                      <div className="flex items-center justify-between text-xs text-zinc-500">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>
                           Rating{" "}
-                          <span className="font-bold text-purple-400">
+                          <span className="font-bold text-primary">
                             {((deck.rating ?? 0) * 100).toFixed(1)}
                           </span>
                         </span>
@@ -169,11 +174,16 @@ export default async function HomePage() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Top Cards */}
           <section>
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="text-xl font-bold text-white">Card Tier List</h2>
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-0.5 rounded-full bg-primary" />
+                <h2 className="font-display text-xl font-bold text-foreground">
+                  Card Tier List
+                </h2>
+              </div>
               <Link
                 href="/cards"
-                className="text-sm text-purple-400 hover:text-purple-300"
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
               >
                 View all →
               </Link>
@@ -181,17 +191,17 @@ export default async function HomePage() {
             {topCards.length === 0 ? (
               <EmptyState message="No card data yet." />
             ) : (
-              <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-700/50 overflow-hidden">
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
                 {topCards.map((card, i) => (
                   <Link
                     key={card.card_id}
                     href={`/cards/${card.card_id}`}
-                    className="flex items-center gap-3 bg-zinc-900/60 px-4 py-3 transition-colors hover:bg-zinc-800/80"
+                    className="group flex items-center gap-3 border-b border-border/50 px-4 py-3 last:border-0 transition-colors hover:bg-accent/40"
                   >
-                    <span className="w-6 text-center text-xs font-bold text-zinc-500">
+                    <span className="w-6 text-center text-xs font-bold tabular-nums text-muted-foreground">
                       {i + 1}
                     </span>
-                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded bg-zinc-800">
+                    <div className="flex h-9 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-secondary">
                       {card.icon_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -200,13 +210,13 @@ export default async function HomePage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <span className="text-[8px] font-bold text-zinc-400">
+                        <span className="text-[8px] font-bold text-muted-foreground">
                           {card.name.slice(0, 4)}
                         </span>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-semibold text-zinc-200">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                         {card.name}
                       </p>
                       <WinRateBar
@@ -215,7 +225,7 @@ export default async function HomePage() {
                         showLabels={false}
                       />
                     </div>
-                    <span className="text-xs font-bold text-purple-400 tabular-nums">
+                    <span className="text-xs font-black tabular-nums text-primary">
                       {((card.rating ?? 0) * 100).toFixed(1)}R
                     </span>
                   </Link>
@@ -226,13 +236,16 @@ export default async function HomePage() {
 
           {/* Top Players */}
           <section>
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="text-xl font-bold text-white">
-                Global Leaderboard
-              </h2>
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-0.5 rounded-full bg-yellow-400" />
+                <h2 className="font-display text-xl font-bold text-foreground">
+                  Global Leaderboard
+                </h2>
+              </div>
               <Link
                 href="/leaderboard"
-                className="text-sm text-purple-400 hover:text-purple-300"
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
               >
                 View all →
               </Link>
@@ -240,22 +253,22 @@ export default async function HomePage() {
             {topPlayers.length === 0 ? (
               <EmptyState message="No leaderboard data yet — run sync-leaderboard." />
             ) : (
-              <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-700/50 overflow-hidden">
-                {topPlayers.map((player) => (
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
+                {topPlayers.map((player, i) => (
                   <Link
                     key={player.player_tag}
                     href={`/players/${encodeURIComponent(player.player_tag)}`}
-                    className="flex items-center gap-3 bg-zinc-900/60 px-4 py-3 transition-colors hover:bg-zinc-800/80"
+                    className="group flex items-center gap-3 border-b border-border/50 px-4 py-3 last:border-0 transition-colors hover:bg-accent/40"
                   >
-                    <span className="w-6 text-center text-xs font-bold text-zinc-500">
-                      {player.current_rank}
+                    <span className="w-6 text-center text-xs font-bold tabular-nums text-muted-foreground">
+                      {i + 1}
                     </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-semibold text-zinc-200">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                         {player.player_name}
                       </p>
                       {player.clan_name && (
-                        <p className="truncate text-xs text-zinc-500">
+                        <p className="truncate text-xs text-muted-foreground">
                           {player.clan_name}
                         </p>
                       )}
@@ -277,7 +290,7 @@ export default async function HomePage() {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-zinc-700/50 py-12 text-center text-sm text-zinc-600">
+    <div className="rounded-xl border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
       {message}
     </div>
   );
