@@ -385,7 +385,7 @@ export function LandingHero({
       {/* ═══════════════  HERO SECTION  ══════════════════════════════════════ */}
       <section
         ref={heroRef}
-        className="relative isolate flex min-h-[calc(100dvh-56px)] items-center overflow-hidden noise-overlay"
+        className="relative isolate flex lg:min-h-[calc(100dvh-56px)] items-center overflow-hidden noise-overlay"
       >
         {/* Background layers */}
         <PerspectiveGrid />
@@ -433,7 +433,7 @@ export function LandingHero({
           </div>
         </div>
 
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_480px] lg:gap-12 lg:py-28">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 ">
           {/* ── LEFT: TEXT ─────────────────────────────────────────────────── */}
           <motion.div style={{ y: heroTextY, opacity: heroOpacity }}>
             {/* Live badge */}
@@ -606,14 +606,14 @@ export function LandingHero({
                     }}
                   />
 
-                  <div className="relative p-6">
+                  <div className="relative p-4 lg:p-6">
                     {/* Card header */}
-                    <div className="mb-5 flex items-start justify-between gap-2">
+                    <div className="mb-4 lg:mb-5 flex items-start justify-between gap-2">
                       <div>
                         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-600">
                           #1 Meta Deck
                         </p>
-                        <p className="mt-1 text-base font-black capitalize text-white">
+                        <p className="mt-1 text-sm lg:text-base font-black capitalize text-white">
                           {archetype}
                         </p>
                         <div className="mt-1 flex items-center gap-2">
@@ -631,7 +631,7 @@ export function LandingHero({
                           type: "spring",
                           stiffness: 200,
                         }}
-                        className="rounded-xl border border-green-800/40 bg-green-950/30 px-4 py-2.5 text-center glass"
+                        className="rounded-xl border border-green-800/40 bg-green-950/30 px-2.5 py-2 lg:px-4 lg:py-2.5 text-center glass"
                       >
                         <p className="font-mono text-[9px] uppercase text-green-600">
                           Win Rate
@@ -644,7 +644,7 @@ export function LandingHero({
 
                     {/* 4 × 2 3D card grid */}
                     <div className="perspective-1000">
-                      <div className="grid grid-cols-4 gap-2.5 preserve-3d">
+                      <div className="grid grid-cols-4 gap-1 lg:gap-2.5 preserve-3d">
                         {cards.slice(0, 8).map((card, i) => {
                           const cost = card.elixir_cost ?? 4;
                           const palette =

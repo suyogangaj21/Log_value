@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { DeckCard } from "@/components/ui/deck-card";
+import { CopyDeckButton } from "@/components/ui/copy-deck-button";
 import { StatCard } from "@/components/ui/stat-card";
 import { WinRateBar } from "@/components/ui/win-rate-bar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -126,6 +127,9 @@ export default async function DeckDetailPage({ params }: Props) {
           avgElixir={deck.avg_elixir}
           archetype={deck.archetype}
         />
+        <div className="mt-3 flex justify-end">
+          <CopyDeckButton cards={cards} />
+        </div>
       </div>
 
       {/* Stats */}

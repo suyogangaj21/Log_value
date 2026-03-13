@@ -2,23 +2,23 @@
   "crons": [
     {
       "path": "/api/workers/sync-cards",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/workers/sync-leaderboard",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 1 * * *"
     },
     {
       "path": "/api/workers/sync-battles?offset=0&limit=50",
-      "schedule": "* * * * *"
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/workers/sync-battles?offset=50&limit=50",
-      "schedule": "* * * * *"
+      "schedule": "0 3 * * *"
     },
     {
       "path": "/api/workers/sync-battles?offset=100&limit=50",
-      "schedule": "* * * * *"
+      "schedule": "0 4 * * *"
     }
   ]
 }
